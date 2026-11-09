@@ -30,7 +30,7 @@ include_once 'Spaceship.php';
         // Haal simpel een eigenschap op (public) en toon dit.
         echo $ship1->ammo . "<br>";   // ammmo
         // Maak een tweede instantie nu custom.
-        $ship2 = new Spaceship(50, 50, 50);
+        $ship2 = new Spaceship(50, 50);
         // Laten zien dat er nu ook een andere waarde komt.
         echo $ship2->ammo . "<br>";
 
