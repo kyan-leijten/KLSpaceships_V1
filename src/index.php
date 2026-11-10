@@ -1,53 +1,118 @@
 <?php
-// Om te zorgen dat de code in dit bestand bij de code in de class kan voegen we onderstaande code toe. Gelieve hier
-// de include_once te gebruiken. Dit zorgt voor een extra stukje bescherming tegen fouten, namelijk dat het bestand
-// maar 1x wordt toegevoegd. Dus als de code al een keer is toegevoegd, dan wordt dat niet nog een keer gedaan. Een
-// zogenaamde include loop wordt hiermee voorkomen.
-include_once 'Spaceship.php';
-?>
+// Eerst de classes laden, dan pas de sessie starten
+include_once 'Battle.php';
+include_once 'Scoreboard.php';
+session_start();
 
+// Geen gevecht bezig of op "opnieuw" geklikt? Nieuw gevecht maken.
+if (!isset($_SESSION['battle']) || isset($_POST['restart'])) {
+    $_SESSION['battle'] = new Battle();
+}
+$battle = $_SESSION['battle'];
+$scoreboard = new Scoreboard();
+
+// Op een actieknop geklikt
+if (isset($_POST['action'])) {
+    $battle->playTurn($_POST['action']);
+}
+
+// Naam ingevuld na game over: score opslaan en opnieuw beginnen
+if (isset($_POST['name']) && $battle->isGameOver()) {
+    $scoreboard->saveScore(htmlspecialchars($_POST['name']), $battle->score);
+    $_SESSION['battle'] = new Battle();
+    $battle = $_SESSION['battle'];
+}
+
+$player = $battle->fleet->getActiveShip();
+$enemy = $battle->enemy;
+?>
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Battle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <p style="font-family: Cambria; font-size: 40px;">
-        <?php
-        // Eerst een standaard instantie maken van het object
-        // Hoe moet het? Wat gebeurt er? Er kan hier verteld worden dat er een nieuwe kopie wordt gemaakt van de
-        // blauwdruk Spaceship. Door geen parameters (data) mee te geven, wordt er een standaard kopie gemaakt. Een
-        // analogie die gemaakt kan worden is met een printer, je maakt een blauwdruk van een document, dat print je
-        // 10x. Als je op de eerste kopie een kras zet met een pen, verschijnt die kras dan ook op de overige 9 kopieën?
-        $ship1 = new Spaceship(); // spaceship? 
+    <main>
+        <header>
+            <h1>Ship Battle</h1>
+            <p>Score: <strong><?= $battle->score ?></strong></p>
+        </header>
 
+        <?php if (!$battle->isGameOver()): ?>
 
-        // Haal simpel een eigenschap op (public) en toon dit.
-        echo $ship1->ammo . "<br>";   // ammmo
-        // Maak een tweede instantie nu custom.
-        $ship2 = new Spaceship(50, 50);
-        // Laten zien dat er nu ook een andere waarde komt.
-        echo $ship2->ammo . "<br>";
+            <!-- Jouw schip tegen de vijand -->
+            <section class="arena">
+                <div class="ship player">
+                    <div class="icon">🚀</div>
+                    <h2><?= $player->getType() ?></h2>
+                    <progress value="<?= $player->hitPoints ?>" max="<?= $player->maxHitPoints ?>"></progress>
+                    <p><?= $player->hitPoints ?> / <?= $player->maxHitPoints ?> HP</p>
+                </div>
 
-        // Data transport. Ship1 schiet, return moet niet worden vergeten.
-        // Variabele expres dmg genoemd ipv damage om te laten zien dat het om de data gaat, niet om de naam.
-        $dmg = $ship1->shoot();
-        // Hoe krijgen we de data bij Ship2? Daarom de parameter.
-        $ship2->hit($dmg);
+                <div class="vs">vs</div>
 
-        // Aantonen dat het is gelukt.
-        echo "Ship1 ammo: " . $ship1->ammo . "<br>";
-        echo "Ship2 HP: " . $ship2->hitPoints . "<br>";
+                <div class="ship enemy">
+                    <div class="icon">🛸</div>
+                    <h2><?= $enemy->getType() ?></h2>
+                    <progress value="<?= $enemy->hitPoints ?>" max="<?= $enemy->maxHitPoints ?>"></progress>
+                    <p><?= $enemy->hitPoints ?> / <?= $enemy->maxHitPoints ?> HP</p>
+                </div>
+            </section>
 
+            <!-- De drie keuzes -->
+            <form method="post" class="actions">
+                <button name="action" value="aanvallen">⚔️ Aanvallen</button>
+                <button name="action" value="ontwijken">💨 Ontwijken</button>
+                <button name="action" value="repareren">🔧 Repareren</button>
+            </form>
 
-        echo "The end of the code has been reached.<br>";
-        ?>
-    </p>
+        <?php else: ?>
+
+            <!-- Game over: naam invullen -->
+            <section class="game-over">
+                <h2>Game over</h2>
+                <p>Je hebt <?= $battle->score ?> vijanden verslagen.</p>
+                <form method="post">
+                    <input name="name" placeholder="Jouw naam" maxlength="20" required>
+                    <button>Opslaan</button>
+                </form>
+            </section>
+
+        <?php endif; ?>
+
+        <!-- Wat er gebeurde -->
+        <section class="log">
+            <?php foreach ($battle->log as $line): ?>
+                <p><?= $line ?></p>
+            <?php endforeach; ?>
+        </section>
+
+        <div class="bottom">
+            <section class="box">
+                <h3>Jouw vloot</h3>
+                <?= $battle->fleet->show() ?>
+                <form method="post">
+                    <button name="restart" value="1" class="small">Opnieuw beginnen</button>
+                </form>
+            </section>
+
+            <section class="box">
+                <h3>Top 10</h3>
+                <ol>
+                    <?php foreach ($scoreboard->getTop10() as $row): ?>
+                        <li><?= $row['name'] ?> <span><?= $row['score'] ?></span></li>
+                    <?php endforeach; ?>
+                </ol>
+            </section>
+        </div>
+    </main>
+    <script src="script.js"></script>
 </body>
 
 </html>

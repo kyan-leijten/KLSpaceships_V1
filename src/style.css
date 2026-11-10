@@ -1,0 +1,554 @@
+/* Extra lettertype voor de titel (moet bovenaan staan) */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+
+/* ===== Kleuren ===== */
+:root {
+    --space: #070b1f;
+    --glass: rgba(20, 30, 70, 0.45);
+    --line: rgba(143, 211, 255, 0.25);
+    --text: #eef3ff;
+    --muted: #9fb0d8;
+    --player: #5ee7ff;
+    --enemy: #ff9f43;
+    --pink: #ff4fd8;
+    --purple: #8b5cff;
+    --green: #4dff9a;
+    --red: #ff4f6d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* ===== Ruimte-achtergrond met nevel ===== */
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Chakra Petch", sans-serif;
+    background:
+        radial-gradient(ellipse at 15% 20%, rgba(139, 92, 255, 0.35), transparent 50%),
+        radial-gradient(ellipse at 85% 30%, rgba(255, 79, 216, 0.25), transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(94, 231, 255, 0.25), transparent 55%),
+        var(--space);
+    background-attachment: fixed;
+    overflow-x: hidden;
+}
+
+/* Laag 1: twinkelende sterren */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::before {
+    background-image:
+        radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+        radial-gradient(1px 1px at 90px 140px, #fff, transparent),
+        radial-gradient(2px 2px at 160px 60px, #fff, transparent),
+        radial-gradient(1px 1px at 230px 190px, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 270px 100px, #ffd27a, transparent),
+        radial-gradient(1px 1px at 40px 220px, #9ae8ff, transparent);
+    background-size: 300px 260px;
+    animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+/* Laag 2: sterren die langzaam voorbij drijven */
+body::after {
+    background-image:
+        radial-gradient(1px 1px at 50px 80px, rgba(255, 255, 255, 0.6), transparent),
+        radial-gradient(1px 1px at 180px 30px, rgba(255, 255, 255, 0.5), transparent),
+        radial-gradient(1.5px 1.5px at 300px 160px, rgba(255, 255, 255, 0.7), transparent);
+    background-size: 400px 300px;
+    animation: drift 60s linear infinite;
+}
+
+@keyframes twinkle {
+    from { opacity: 0.4; }
+    to   { opacity: 1; }
+}
+
+@keyframes drift {
+    from { background-position: 0 0; }
+    to   { background-position: -400px 300px; }
+}
+
+main {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+}
+
+/* ===== Kop ===== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+h1 {
+    margin: 0;
+    font-family: "Orbitron", sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    letter-spacing: 0.04em;
+    background: linear-gradient(90deg, var(--player), var(--purple), var(--pink), var(--enemy), var(--player));
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 18px rgba(139, 92, 255, 0.6));
+    animation: shine 6s linear infinite;
+}
+
+@keyframes shine {
+    to { background-position: 300% center; }
+}
+
+/* Score als neon-badge */
+header p {
+    margin: 0;
+    padding: 10px 22px;
+    border: 1px solid var(--player);
+    border-radius: 999px;
+    background: rgba(94, 231, 255, 0.08);
+    box-shadow: 0 0 20px rgba(94, 231, 255, 0.35), inset 0 0 12px rgba(94, 231, 255, 0.2);
+    color: var(--muted);
+}
+
+header strong {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.5rem;
+    color: var(--player);
+    text-shadow: 0 0 10px var(--player);
+}
+
+/* ===== Arena ===== */
+.arena {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+    margin: 40px 0 28px;
+}
+
+/* Glazen panelen */
+.ship {
+    position: relative;
+    padding: 28px 22px 22px;
+    text-align: center;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.player {
+    border: 1px solid rgba(94, 231, 255, 0.5);
+    animation: glow-player 3s ease-in-out infinite;
+}
+
+.enemy {
+    border: 1px solid rgba(255, 159, 67, 0.5);
+    animation: glow-enemy 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes glow-player {
+    50% { box-shadow: 0 0 40px rgba(94, 231, 255, 0.45), inset 0 0 30px rgba(94, 231, 255, 0.12); }
+}
+
+@keyframes glow-enemy {
+    50% { box-shadow: 0 0 40px rgba(255, 159, 67, 0.45), inset 0 0 30px rgba(255, 159, 67, 0.12); }
+}
+
+/* Lichtstreep die over het paneel scant */
+.ship::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: skewX(-20deg);
+    animation: scan 5s ease-in-out infinite;
+}
+
+@keyframes scan {
+    0%, 60% { left: -60%; }
+    100%    { left: 130%; }
+}
+
+/* Schepen */
+.icon {
+    display: inline-block;
+    font-size: 5rem;
+    line-height: 1.2;
+    animation: float 3s ease-in-out infinite;
+}
+
+.player .icon {
+    filter: drop-shadow(0 0 16px var(--player));
+    transform: rotate(45deg); /* Raket kijkt naar rechts, naar de vijand */
+    animation: float-player 3s ease-in-out infinite;
+}
+
+.enemy .icon {
+    filter: drop-shadow(0 0 16px var(--enemy));
+    animation: float-enemy 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes float-player {
+    50% { transform: rotate(45deg) translate(-6px, -10px); }
+}
+
+@keyframes float-enemy {
+    0%, 100% { transform: translateY(0) rotate(-6deg); }
+    50%      { transform: translateY(-12px) rotate(6deg); }
+}
+
+.ship h2 {
+    margin: 12px 0 14px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+}
+
+.player h2 { color: var(--player); text-shadow: 0 0 12px var(--player); }
+.enemy h2  { color: var(--enemy);  text-shadow: 0 0 12px var(--enemy); }
+
+.ship p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+/* VS in het midden */
+.vs {
+    font-family: "Orbitron", sans-serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 14px var(--pink));
+    animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    50% { transform: scale(1.18); }
+}
+
+/* ===== HP-balken ===== */
+progress {
+    width: 100%;
+    height: 14px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 999px;
+}
+
+.player progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--purple), var(--player));
+    border-radius: 999px;
+    box-shadow: 0 0 12px var(--player);
+}
+
+.enemy progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--red), var(--enemy));
+    border-radius: 999px;
+    box-shadow: 0 0 12px var(--enemy);
+}
+
+.player progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--purple), var(--player));
+    border-radius: 999px;
+}
+
+.enemy progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--red), var(--enemy));
+    border-radius: 999px;
+}
+
+/* ===== Actieknoppen ===== */
+.actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.actions button {
+    --color: var(--player);
+    position: relative;
+    overflow: hidden;
+    padding: 18px 12px;
+    font-family: "Orbitron", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid var(--color);
+    border-radius: 14px;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--color) 40%, transparent),
+                inset 0 0 16px color-mix(in srgb, var(--color) 20%, transparent);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+/* Elke knop een eigen kleur */
+.actions button:nth-child(1) { --color: var(--red); }
+.actions button:nth-child(2) { --color: var(--player); }
+.actions button:nth-child(3) { --color: var(--green); }
+
+.actions button:hover {
+    transform: translateY(-4px) scale(1.03);
+    background: color-mix(in srgb, var(--color) 22%, transparent);
+    box-shadow: 0 0 34px var(--color), inset 0 0 22px color-mix(in srgb, var(--color) 35%, transparent);
+}
+
+.actions button:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* Glans die over de knop schiet bij hover */
+.actions button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+}
+
+.actions button:hover::after {
+    animation: sweep 0.6s ease-out;
+}
+
+@keyframes sweep {
+    to { left: 140%; }
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--pink);
+    outline-offset: 3px;
+}
+
+/* ===== Log (wat er gebeurde) ===== */
+.log {
+    margin: 28px 0;
+    padding: 18px 22px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--purple);
+    border-radius: 0 14px 14px 0;
+    box-shadow: 0 0 24px rgba(139, 92, 255, 0.25);
+}
+
+.log p {
+    margin: 6px 0;
+    opacity: 0;
+    animation: appear 0.4s ease-out forwards;
+}
+
+.log p::before {
+    content: "› ";
+    color: var(--pink);
+}
+
+/* Regels komen een voor een binnen */
+.log p:nth-child(1) { animation-delay: 0.05s; }
+.log p:nth-child(2) { animation-delay: 0.25s; }
+.log p:nth-child(3) { animation-delay: 0.45s; }
+.log p:nth-child(4) { animation-delay: 0.65s; }
+.log p:nth-child(5) { animation-delay: 0.85s; }
+
+@keyframes appear {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== Game over ===== */
+.game-over {
+    margin-top: 40px;
+    padding: 36px 24px;
+    text-align: center;
+    background: rgba(255, 79, 109, 0.08);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--red);
+    border-radius: 20px;
+    animation: alarm 1.4s ease-in-out infinite;
+}
+
+@keyframes alarm {
+    50% { box-shadow: 0 0 50px rgba(255, 79, 109, 0.6), inset 0 0 30px rgba(255, 79, 109, 0.2); }
+}
+
+.game-over h2 {
+    margin: 0 0 8px;
+    font-family: "Orbitron", sans-serif;
+    font-weight: 900;
+    font-size: 2.6rem;
+    color: var(--red);
+    text-shadow: 0 0 20px var(--red);
+}
+
+.game-over form {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.game-over input {
+    padding: 14px 18px;
+    font: inherit;
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.game-over button {
+    padding: 14px 26px;
+    font-family: "Orbitron", sans-serif;
+    font-weight: 700;
+    color: var(--space);
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 24px var(--pink);
+    transition: transform 0.15s ease;
+}
+
+.game-over button:hover {
+    transform: scale(1.06);
+}
+
+/* ===== Vloot en top 10 ===== */
+.bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.box {
+    padding: 22px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+}
+
+.box h3 {
+    margin: 0 0 14px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: var(--player);
+    text-shadow: 0 0 10px var(--player);
+}
+
+.box ul,
+.box ol {
+    margin: 0 0 14px;
+    padding-left: 22px;
+}
+
+.box li {
+    padding: 6px 4px;
+    color: var(--muted);
+    border-bottom: 1px dashed rgba(143, 211, 255, 0.12);
+    transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.box li:hover {
+    color: var(--text);
+    padding-left: 10px;
+}
+
+/* Het schip dat nu vecht licht op */
+.box ul li:first-child {
+    color: var(--player);
+    text-shadow: 0 0 8px var(--player);
+}
+
+.box li span {
+    float: right;
+    font-family: "Orbitron", sans-serif;
+    color: var(--enemy);
+}
+
+/* Goud, zilver, brons in de top 10 */
+.box ol li:nth-child(1) span { color: #ffd84d; text-shadow: 0 0 10px #ffd84d; }
+.box ol li:nth-child(2) span { color: #d9e2f2; }
+.box ol li:nth-child(3) span { color: #e3965a; }
+
+button.small {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+button.small:hover {
+    color: var(--pink);
+    border-color: var(--pink);
+}
+
+/* ===== Telefoon: alles onder elkaar ===== */
+@media (max-width: 640px) {
+    .arena,
+    .actions,
+    .bottom {
+        grid-template-columns: 1fr;
+    }
+
+    .vs {
+        text-align: center;
+    }
+}
+
+/* ===== Minder beweging als iemand dat heeft ingesteld ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .log p {
+        opacity: 1;
+    }
+}
