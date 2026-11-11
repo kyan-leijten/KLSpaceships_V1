@@ -40,6 +40,11 @@ class Battle
     // Eén beurt spelen
     public function playTurn(string $choice): void
     {
+        // Al game over (vloot leeg)? Dan valt er niks meer te spelen.
+        if ($this->isGameOver()) {
+            return;
+        }
+
         $player = $this->fleet->getActiveShip();
         $enemyChoice = ['aanvallen', 'ontwijken', 'repareren'][rand(0, 2)];
         $this->log = ["Jij kiest $choice, de vijand kiest $enemyChoice."];

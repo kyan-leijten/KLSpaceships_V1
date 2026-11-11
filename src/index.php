@@ -3,6 +3,7 @@
 include_once 'Battle.php';
 include_once 'Scoreboard.php';
 session_start();
+
 // Pagina gewoon geopend of herladen (geen knop ingedrukt)? Dan reset het spel.
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     unset($_SESSION['battle']);
@@ -23,8 +24,8 @@ if (isset($_POST['start'])) {
 // Het gevecht van nu, of null als je nog moet kiezen
 $battle = $_SESSION['battle'] ?? null;
 
-// Op een actieknop geklikt
-if ($battle && isset($_POST['action'])) {
+// Op een actieknop geklikt (alleen als het spel nog bezig is)
+if ($battle && isset($_POST['action']) && !$battle->isGameOver()) {
     $battle->playTurn($_POST['action']);
 }
 
@@ -52,7 +53,7 @@ $specials = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ship Battle</title>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?= time() ?>">
 </head>
 
 <body>
