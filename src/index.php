@@ -3,28 +3,46 @@
 include_once 'Battle.php';
 include_once 'Scoreboard.php';
 session_start();
-
-// Geen gevecht bezig of op "opnieuw" geklikt? Nieuw gevecht maken.
-if (!isset($_SESSION['battle']) || isset($_POST['restart'])) {
-    $_SESSION['battle'] = new Battle();
+// Pagina gewoon geopend of herladen (geen knop ingedrukt)? Dan reset het spel.
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    unset($_SESSION['battle']);
 }
-$battle = $_SESSION['battle'];
+
 $scoreboard = new Scoreboard();
 
+// Opnieuw beginnen: gevecht weggooien, terug naar het keuzescherm
+if (isset($_POST['restart'])) {
+    unset($_SESSION['battle']);
+}
+
+// Startschip gekozen: nieuw gevecht maken met dat schip vooraan
+if (isset($_POST['start'])) {
+    $_SESSION['battle'] = new Battle($_POST['start']);
+}
+
+// Het gevecht van nu, of null als je nog moet kiezen
+$battle = $_SESSION['battle'] ?? null;
+
 // Op een actieknop geklikt
-if (isset($_POST['action'])) {
+if ($battle && isset($_POST['action'])) {
     $battle->playTurn($_POST['action']);
 }
 
-// Naam ingevuld na game over: score opslaan en opnieuw beginnen
-if (isset($_POST['name']) && $battle->isGameOver()) {
+// Naam ingevuld na game over: score opslaan, terug naar keuzescherm
+if ($battle && isset($_POST['name']) && $battle->isGameOver()) {
     $scoreboard->saveScore(htmlspecialchars($_POST['name']), $battle->score);
-    $_SESSION['battle'] = new Battle();
-    $battle = $_SESSION['battle'];
+    unset($_SESSION['battle']);
+    $battle = null;
 }
 
-$player = $battle->fleet->getActiveShip();
-$enemy = $battle->enemy;
+// Voor het keuzescherm: van elk type één schip maken om de waardes te laten zien
+$options = [new Fighter(), new Tank(), new Repairer()];
+$icons = ['Fighter' => '🚀', 'Tank' => '🛡️', 'Repairer' => '🔧'];
+$specials = [
+    'Fighter'  => '15% kans op dubbele schade',
+    'Tank'     => 'Schild houdt 5 schade tegen',
+    'Repairer' => 'Repareert dubbel',
+];
 ?>
 <!doctype html>
 <html lang="nl">
@@ -41,10 +59,35 @@ $enemy = $battle->enemy;
     <main>
         <header>
             <h1>Ship Battle</h1>
-            <p>Score: <strong><?= $battle->score ?></strong></p>
+            <?php if ($battle): ?>
+                <p>Score: <strong><?= $battle->score ?></strong></p>
+            <?php endif; ?>
         </header>
 
-        <?php if (!$battle->isGameOver()): ?>
+        <?php if (!$battle): ?>
+
+            <!-- Keuzescherm: met welk schip begin je? -->
+            <section class="choose">
+                <h2>Kies je startschip</h2>
+                <form method="post" class="choose-grid">
+                    <?php foreach ($options as $ship): ?>
+                        <button name="start" value="<?= $ship->getType() ?>" class="choose-card">
+                            <span class="choose-icon"><?= $icons[$ship->getType()] ?></span>
+                            <strong><?= $ship->getType() ?></strong>
+                            <span><?= $ship->hitPoints ?> HP, <?= $ship->damage ?> schade</span>
+                            <em><?= $specials[$ship->getType()] ?></em>
+                        </button>
+                    <?php endforeach; ?>
+                </form>
+                <p class="choose-note">De andere twee schepen zitten als reserve in je vloot.</p>
+            </section>
+
+        <?php elseif (!$battle->isGameOver()): ?>
+
+            <?php
+            $player = $battle->fleet->getActiveShip();
+            $enemy = $battle->enemy;
+            ?>
 
             <!-- Jouw schip tegen de vijand -->
             <section class="arena">
@@ -86,21 +129,25 @@ $enemy = $battle->enemy;
 
         <?php endif; ?>
 
-        <!-- Wat er gebeurde -->
-        <section class="log">
-            <?php foreach ($battle->log as $line): ?>
-                <p><?= $line ?></p>
-            <?php endforeach; ?>
-        </section>
+        <?php if ($battle): ?>
+            <!-- Wat er gebeurde -->
+            <section class="log">
+                <?php foreach ($battle->log as $line): ?>
+                    <p><?= $line ?></p>
+                <?php endforeach; ?>
+            </section>
+        <?php endif; ?>
 
         <div class="bottom">
-            <section class="box">
-                <h3>Jouw vloot</h3>
-                <?= $battle->fleet->show() ?>
-                <form method="post">
-                    <button name="restart" value="1" class="small">Opnieuw beginnen</button>
-                </form>
-            </section>
+            <?php if ($battle): ?>
+                <section class="box">
+                    <h3>Jouw vloot</h3>
+                    <?= $battle->fleet->show() ?>
+                    <form method="post">
+                        <button name="restart" value="1" class="small">Opnieuw beginnen</button>
+                    </form>
+                </section>
+            <?php endif; ?>
 
             <section class="box">
                 <h3>Top 10</h3>

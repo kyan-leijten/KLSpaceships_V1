@@ -11,12 +11,29 @@ class Battle
     public int $score = 0;     // Verslagen vijanden
     public array $log = [];    // Wat er gebeurde
 
-    public function __construct()
+    // Wordt uitgevoerd bij "new Battle('Tank')".
+    // Het gekozen schip komt vooraan in de vloot, de andere twee erachter.
+    public function __construct(string $startShip)
     {
+        $ships = [
+            'Fighter'  => new Fighter(),
+            'Tank'     => new Tank(),
+            'Repairer' => new Repairer(),
+        ];
+
+        // Onbekende keuze? Dan gewoon met de Fighter beginnen
+        if (!isset($ships[$startShip])) {
+            $startShip = 'Fighter';
+        }
+
         $this->fleet = new Fleet();
-        $this->fleet->addShip(new Fighter());
-        $this->fleet->addShip(new Tank());
-        $this->fleet->addShip(new Repairer());
+        $this->fleet->addShip($ships[$startShip]);   // Gekozen schip eerst
+        unset($ships[$startShip]);                   // Uit het lijstje halen
+
+        foreach ($ships as $ship) {                  // De rest erachter
+            $this->fleet->addShip($ship);
+        }
+
         $this->newEnemy();
     }
 
