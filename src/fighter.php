@@ -19,4 +19,10 @@ class Fighter extends Spaceship
         }
         return $this->damage;
     }
+
+    // Het verplichte vakje van Spaceship invullen
+    public function getSpecial(): string
+    {
+        return "{$this->critChance}% kans op dubbele schade";
+    }
 }

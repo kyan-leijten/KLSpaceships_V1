@@ -1,18 +1,24 @@
-<?php
-include_once 'Spaceship.php';
+]<?php
+    include_once 'Spaceship.php';
 
-// Repairer: normaal schip, maar repareert dubbel.
-class Repairer extends Spaceship
-{
-    public function __construct()
+    // Repairer: normaal schip, maar repareert dubbel.
+    class Repairer extends Spaceship
     {
-        parent::__construct(100, 20);   // 100 HP, 20 schade
-    }
+        public function __construct()
+        {
+            parent::__construct(100, 20);   // 100 HP, 20 schade
+        }
 
-    // Eigen versie van repair(): de gewone repair() twee keer
-    public function repair(): void
-    {
-        parent::repair();
-        parent::repair();
+        // Eigen versie van repair(): de gewone repair() twee keer
+        public function repair(): void
+        {
+            parent::repair();
+            parent::repair();
+        }
+
+        // Het verplichte vakje van Spaceship invullen
+        public function getSpecial(): string
+        {
+            return "Repareert dubbel";
+        }
     }
-}

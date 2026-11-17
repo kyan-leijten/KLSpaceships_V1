@@ -1,13 +1,14 @@
 <?php
-// Spaceship is de parent-class: wat ELK schip heeft en kan.
-class Spaceship
+// Spaceship is een abstracte parent-class: je maakt er nooit zelf een object van,
+// alleen van de subclasses Fighter, Tank en Repairer.
+abstract class Spaceship
 {
     public int $hitPoints;     // Levenspunten nu
     public int $maxHitPoints;  // Maximum levenspunten
     public int $damage;        // Schade per schot
     public bool $isAlive;      // Leeft het schip nog?
 
-    // Wordt uitgevoerd bij "new Spaceship()"
+    // Wordt uitgevoerd bij "new Fighter()" enz. via parent::__construct()
     public function __construct($hitPoints = 100, $damage = 20)
     {
         $this->hitPoints = $hitPoints;
@@ -44,4 +45,7 @@ class Spaceship
     {
         return get_class($this);
     }
+
+    // Abstracte functie: leeg vakje. Elk schip MOET zelf vertellen wat zijn speciale ding is.
+    abstract public function getSpecial(): string;
 }

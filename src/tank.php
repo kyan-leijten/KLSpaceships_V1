@@ -16,4 +16,10 @@ class Tank extends Spaceship
     {
         parent::hit(max(0, $damage - $this->shield));
     }
+
+    // Het verplichte vakje van Spaceship invullen
+    public function getSpecial(): string
+    {
+        return "Schild houdt {$this->shield} schade tegen";
+    }
 }

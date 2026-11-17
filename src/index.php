@@ -39,11 +39,6 @@ if ($battle && isset($_POST['name']) && $battle->isGameOver()) {
 // Voor het keuzescherm: van elk type één schip maken om de waardes te laten zien
 $options = [new Fighter(), new Tank(), new Repairer()];
 $icons = ['Fighter' => '🚀', 'Tank' => '🛡️', 'Repairer' => '🔧'];
-$specials = [
-    'Fighter'  => '15% kans op dubbele schade',
-    'Tank'     => 'Schild houdt 5 schade tegen',
-    'Repairer' => 'Repareert dubbel',
-];
 ?>
 <!doctype html>
 <html lang="nl">
@@ -76,7 +71,8 @@ $specials = [
                             <span class="choose-icon"><?= $icons[$ship->getType()] ?></span>
                             <strong><?= $ship->getType() ?></strong>
                             <span><?= $ship->hitPoints ?> HP, <?= $ship->damage ?> schade</span>
-                            <em><?= $specials[$ship->getType()] ?></em>
+                            <!-- getSpecial() is de abstracte functie die elk schip zelf invult -->
+                            <em><?= $ship->getSpecial() ?></em>
                         </button>
                     <?php endforeach; ?>
                 </form>
