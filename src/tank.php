@@ -1,5 +1,6 @@
 <?php
-include_once 'Spaceship.php';
+
+namespace Spaceships;
 
 // Tank: veel HP, weinig schade, en een schild dat 5 schade tegenhoudt.
 class Tank extends Spaceship

@@ -1,4 +1,6 @@
 <?php
+
+namespace Spaceships;
 // Scoreboard: slaat scores op in een bestand (scores.json).
 class Scoreboard
 {
@@ -26,6 +28,6 @@ class Scoreboard
         if (!file_exists($this->file)) {
             return [];
         }
-        return json_decode(file_get_contents($this->file), true) ?? []; 
+        return json_decode(file_get_contents($this->file), true) ?? [];
     }
 }

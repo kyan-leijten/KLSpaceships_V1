@@ -1,7 +1,15 @@
 <?php
 // Eerst de classes laden, dan pas de sessie starten
-include_once 'Battle.php';
-include_once 'Scoreboard.php';
+// Composer laadt alle classes automatisch, dus geen include_once meer nodig
+require __DIR__ . '/../vendor/autoload.php';
+
+// Met "use" zeg je welke classes uit de namespace Spaceships je hier gebruikt
+use Spaceships\Battle;
+use Spaceships\Scoreboard;
+use Spaceships\Fighter;
+use Spaceships\Tank;
+use Spaceships\Repairer;
+
 session_start();
 
 // Pagina gewoon geopend of herladen (geen knop ingedrukt)? Dan reset het spel.

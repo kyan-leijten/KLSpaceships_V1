@@ -1,5 +1,6 @@
 <?php
-include_once 'Fleet.php';
+
+namespace Spaceships;
 
 // Battle: jouw vloot tegen steeds een nieuwe vijand.
 // Aanvallen wint van repareren, ontwijken wint van aanvallen,

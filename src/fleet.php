@@ -1,7 +1,6 @@
 <?php
-include_once 'Fighter.php';
-include_once 'Tank.php';
-include_once 'Repairer.php';
+
+namespace Spaceships;
 
 // Fleet: een lijst met schepen (zoals het Autopark uit de les).
 // Het eerste schip in de lijst is het schip dat nu vecht.

@@ -1,5 +1,6 @@
 <?php
-include_once 'Spaceship.php';
+
+namespace Spaceships;
 
 // Fighter: weinig HP, veel schade, en 15% kans op dubbele schade.
 class Fighter extends Spaceship

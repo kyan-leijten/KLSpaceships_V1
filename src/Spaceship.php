@@ -1,4 +1,6 @@
 <?php
+
+namespace Spaceships;
 // Spaceship is een abstracte parent-class: je maakt er nooit zelf een object van,
 // alleen van de subclasses Fighter, Tank en Repairer.
 abstract class Spaceship
@@ -43,7 +45,7 @@ abstract class Spaceship
     // Geeft de naam van de class terug, bijv. "Fighter"
     public function getType(): string
     {
-        return get_class($this);
+        return (new \ReflectionClass($this))->getShortName();
     }
 
     // Abstracte functie: leeg vakje. Elk schip MOET zelf vertellen wat zijn speciale ding is.
